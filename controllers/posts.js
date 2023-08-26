@@ -1,9 +1,9 @@
-import Post from '../models/Post.js'
+import postsService from '../services/posts.js'
 
 class PostsController {
   async index(req, res) {
     try {
-      const posts = await Post.find()
+      const posts = await postsService.index()
       res.json(posts)
     } catch (error) {
       res.status(500).json(error)
@@ -12,11 +12,7 @@ class PostsController {
 
   async show(req, res) {
     try {
-      const { id } = req.params
-      if (!id) {
-        res.status(400).json({ message: 'id is required' })
-      }
-      const post = await Post.findById(id)
+      const post = await postsService.show(req.params.id)
       res.json(post)
     } catch (error) {
       res.status(500).json(error)
@@ -25,8 +21,7 @@ class PostsController {
 
   async create(req, res) {
     try {
-      const { author, title, content } = req.body
-      const post = await Post.create({ author, title, content })
+      const post = await postsService.create(req.body, req.files.picture)
       res.json(post)
     } catch (error) {
       res.status(500).json(error)
@@ -35,9 +30,7 @@ class PostsController {
 
   async update(req, res) {
     try {
-      const { id } = req.params
-      const post = req.body
-      const updatedPost = await Post.findByIdAndUpdate(id, post, { new: true })
+      const updatedPost = await postsService.update(req.params.id, req.body)
       res.json(updatedPost)
     } catch (error) {
       res.status(500).json(error)
@@ -46,8 +39,7 @@ class PostsController {
 
   async destroy(req, res) {
     try {
-      const { id } = req.params
-      await Post.findByIdAndDelete(id)
+      await postsService.destroy(req.params.id)
       res.json({ message: 'Successfull deleted!'})
     } catch (error) {
       res.status(500).json(error)
@@ -55,4 +47,4 @@ class PostsController {
   }
 }
 
-export default new PostsController
+export default new PostsController()
